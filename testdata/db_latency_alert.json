@@ -1,0 +1,20 @@
+{
+  "id": "db-latency-spike-001",
+  "alertname": "DatabaseHighLatency",
+  "labels": {
+    "alertname": "DatabaseHighLatency",
+    "service": "order-service",
+    "namespace": "production",
+    "severity": "critical",
+    "env": "prod",
+    "db": "postgres-primary"
+  },
+  "annotations": {
+    "summary": "PostgreSQL p99 query latency exceeds 2s",
+    "description": "The order-service is experiencing p99 database latency of 2.4s, up from a baseline of 120ms. Read queries appear most impacted.",
+    "runbook": "https://wiki.internal/runbooks/db-latency"
+  },
+  "startsAt": "2024-01-22T09:15:00Z",
+  "endsAt": "0001-01-01T00:00:00Z",
+  "status": "firing"
+}

@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rca-agent-config
+  namespace: monitoring
+data:
+  config.yaml: |
+    llm:
+      model: "claude-sonnet-4-20250514"
+
+    mcp_servers:
+      prometheus:
+        url: "http://prometheus-mcp.monitoring.svc.cluster.local:8080"
+        timeout: 30s
+      loki:
+        url: "http://loki-mcp.monitoring.svc.cluster.local:8080"
+        timeout: 30s
+      tempo:
+        url: "http://tempo-mcp.monitoring.svc.cluster.local:8080"
+        timeout: 30s
+      pyroscope:
+        url: "http://pyroscope-mcp.monitoring.svc.cluster.local:8080"
+        timeout: 30s
+      grafana:
+        url: "http://grafana-mcp.monitoring.svc.cluster.local:8080"
+        timeout: 30s
+
+    webhook:
+      port: 8080
+      dedup_ttl: 10m
+      allowed_severities:
+        - critical
+        - page
+
+    investigation:
+      timeout: 5m
+      baseline_days: 7
+      anomaly_zscore: 3.0

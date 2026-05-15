@@ -1,0 +1,37 @@
+llm:
+  # api_key can also be set via ANTHROPIC_API_KEY env var
+  api_key: ""
+  model: "claude-sonnet-4-20250514"
+
+mcp_servers:
+  prometheus:
+    url: "http://prometheus-mcp:8080"
+    timeout: 30s
+  loki:
+    url: "http://loki-mcp:8080"
+    timeout: 30s
+  tempo:
+    url: "http://tempo-mcp:8080"
+    timeout: 30s
+  pyroscope:
+    url: "http://pyroscope-mcp:8080"
+    timeout: 30s
+  grafana:
+    url: "http://grafana-mcp:8080"
+    timeout: 30s
+
+webhook:
+  port: 8080
+  dedup_ttl: 10m
+  allowed_severities:
+    - critical
+    - page
+
+investigation:
+  timeout: 5m
+  baseline_days: 7
+  anomaly_zscore: 3.0
+
+output:
+  # slack_webhook_url can also be set via SLACK_WEBHOOK_URL env var
+  slack_webhook_url: ""

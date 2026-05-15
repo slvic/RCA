@@ -1,0 +1,19 @@
+{
+  "id": "checkout-error-rate-001",
+  "alertname": "CheckoutHighErrorRate",
+  "labels": {
+    "alertname": "CheckoutHighErrorRate",
+    "service": "checkout",
+    "namespace": "production",
+    "severity": "critical",
+    "env": "prod"
+  },
+  "annotations": {
+    "summary": "Checkout service error rate above 5%",
+    "description": "The checkout service is returning errors at 4.8%, well above the 1% SLO threshold. This is impacting customer purchases.",
+    "runbook": "https://wiki.internal/runbooks/checkout-errors"
+  },
+  "startsAt": "2024-01-15T14:03:10Z",
+  "endsAt": "0001-01-01T00:00:00Z",
+  "status": "firing"
+}

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rca-agent
+  namespace: monitoring
+  labels:
+    app: rca-agent
+spec:
+  replicas: 1  # single replica intentional — stateful in-memory dedup
+  selector:
+    matchLabels:
+      app: rca-agent
+  template:
+    metadata:
+      labels:
+        app: rca-agent
+    spec:
+      containers:
+        - name: rca-agent
+          image: your-registry/rca-agent:latest
+          ports:
+            - containerPort: 8080
+          args:
+            - "--config=/etc/rca-agent/config.yaml"
+          env:
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rca-agent-secrets
+                  key: anthropic-api-key
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: rca-agent-secrets
+                  key: slack-webhook-url
+          volumeMounts:
+            - name: config
+              mountPath: /etc/rca-agent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: rca-agent-config
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: rca-agent-pdb
+  namespace: monitoring
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: rca-agent

@@ -1,0 +1,21 @@
+{
+  "id": "oom-kill-001",
+  "alertname": "ContainerOOMKilled",
+  "labels": {
+    "alertname": "ContainerOOMKilled",
+    "service": "recommendation-engine",
+    "namespace": "production",
+    "severity": "critical",
+    "env": "prod",
+    "container": "recommendation-engine",
+    "pod": "recommendation-engine-7d9f8b-xkj2p"
+  },
+  "annotations": {
+    "summary": "Container OOMKilled 3 times in last 10 minutes",
+    "description": "The recommendation-engine container has been OOMKilled 3 times in the past 10 minutes. The container memory limit is 512Mi. A recent model update may have increased memory consumption.",
+    "runbook": "https://wiki.internal/runbooks/oom-kill"
+  },
+  "startsAt": "2024-02-01T18:45:00Z",
+  "endsAt": "0001-01-01T00:00:00Z",
+  "status": "firing"
+}
