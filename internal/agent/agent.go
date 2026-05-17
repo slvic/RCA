@@ -30,7 +30,20 @@ func New(llmClient *llm.Client, mcpClient *mcp.Client, cfg *config.Config, logge
 	}
 }
 
-func (a *Agent) Investigate(ctx context.Context, alert report.Alert) (*report.RCAReport, error) {
+// Investigate dispatches to plan or react mode. If mode is empty, the config default is used.
+func (a *Agent) Investigate(ctx context.Context, alert report.Alert, mode string) (*report.RCAReport, error) {
+	if mode == "" {
+		mode = a.cfg.Investigation.Mode
+	}
+	switch mode {
+	case "react":
+		return a.investigateReAct(ctx, alert)
+	default:
+		return a.investigatePlan(ctx, alert)
+	}
+}
+
+func (a *Agent) investigatePlan(ctx context.Context, alert report.Alert) (*report.RCAReport, error) {
 	start := time.Now()
 
 	tr := report.TimeRange{
@@ -46,6 +59,7 @@ func (a *Agent) Investigate(ctx context.Context, alert report.Alert) (*report.RC
 
 	a.logger.Info("investigation started",
 		"alert", alert.Name,
+		"mode", "plan",
 		"service", service,
 		"namespace", namespace,
 		"window_from", tr.From,

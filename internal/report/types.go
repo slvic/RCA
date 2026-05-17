@@ -38,8 +38,9 @@ type RCAReport struct {
 	Findings  []Finding  `json:"findings"`
 	NextSteps []string   `json:"next_steps"`
 
-	AlternativeHypotheses []string `json:"alternative_hypotheses,omitempty"`
-	LLMTokensUsed         int      `json:"llm_tokens_used"`
+	AlternativeHypotheses []string    `json:"alternative_hypotheses,omitempty"`
+	ReactSteps            []ReactStep `json:"react_steps,omitempty"`
+	LLMTokensUsed         int         `json:"llm_tokens_used"`
 }
 
 type Evidence struct {
@@ -54,4 +55,13 @@ type Event struct {
 	Time        time.Time `json:"time"`
 	Description string    `json:"description"`
 	Source      string    `json:"source"` // "deployment", "alert", "config_change"
+}
+
+type ReactStep struct {
+	Iteration   int       `json:"iteration"`
+	Thought     string    `json:"thought"`      // LLM reasoning
+	Action      string    `json:"action"`       // tool name or "final_answer"
+	ActionInput string    `json:"action_input"` // params passed to tool
+	Observation string    `json:"observation"`  // tool result summary
+	Timestamp   time.Time `json:"timestamp"`
 }

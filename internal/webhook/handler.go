@@ -56,6 +56,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Respond immediately so Alertmanager doesn't time out.
 	w.WriteHeader(http.StatusOK)
 
+	mode := r.URL.Query().Get("mode") // "" → agent uses config default
+
 	for _, a := range payload.Alerts {
 		if a.Status != "firing" {
 			continue
@@ -68,15 +70,15 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		go h.investigate(a)
+		go h.investigate(a, mode)
 	}
 }
 
-func (h *Handler) investigate(a report.Alert) {
+func (h *Handler) investigate(a report.Alert, mode string) {
 	ctx, cancel := context.WithTimeout(context.Background(), h.investigationTimeout)
 	defer cancel()
 
-	rep, err := h.agent.Investigate(ctx, a)
+	rep, err := h.agent.Investigate(ctx, a, mode)
 	if err != nil {
 		h.logger.Error("investigation failed", "alert", a.Name, "err", err)
 		return

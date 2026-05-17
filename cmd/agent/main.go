@@ -23,6 +23,7 @@ import (
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to config file")
 	alertFile := flag.String("alert-file", "", "run a single investigation from a JSON alert file (CLI mode)")
+	mode := flag.String("mode", "", "investigation mode: plan|react (default: from config)")
 	flag.Parse()
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -41,14 +42,14 @@ func main() {
 	ag := agent.New(llmClient, mcpClient, cfg, logger)
 
 	if *alertFile != "" {
-		runCLI(ag, *alertFile, cfg, logger)
+		runCLI(ag, *alertFile, *mode, cfg, logger)
 		return
 	}
 
 	runServer(ag, cfg, logger)
 }
 
-func runCLI(ag *agent.Agent, alertFile string, cfg *config.Config, logger *slog.Logger) {
+func runCLI(ag *agent.Agent, alertFile, mode string, cfg *config.Config, logger *slog.Logger) {
 	data, err := os.ReadFile(alertFile)
 	if err != nil {
 		logger.Error("read alert file", "err", err)
@@ -64,9 +65,9 @@ func runCLI(ag *agent.Agent, alertFile string, cfg *config.Config, logger *slog.
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Investigation.Timeout)
 	defer cancel()
 
-	logger.Info("CLI mode: investigating alert", "alert", a.Name)
+	logger.Info("CLI mode: investigating alert", "alert", a.Name, "mode", mode)
 
-	rep, err := ag.Investigate(ctx, a)
+	rep, err := ag.Investigate(ctx, a, mode)
 	if err != nil {
 		logger.Error("investigation failed", "err", err)
 		os.Exit(1)

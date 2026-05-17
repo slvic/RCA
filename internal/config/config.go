@@ -23,9 +23,11 @@ type Config struct {
 	} `yaml:"webhook"`
 
 	Investigation struct {
-		Timeout      time.Duration `yaml:"timeout"`
-		BaselineDays int           `yaml:"baseline_days"`
-		AnomalyZScore float64      `yaml:"anomaly_zscore"`
+		Timeout       time.Duration `yaml:"timeout"`
+		BaselineDays  int           `yaml:"baseline_days"`
+		AnomalyZScore float64       `yaml:"anomaly_zscore"`
+		Mode          string        `yaml:"mode"`           // "plan" | "react"
+		ReactMaxIter  int           `yaml:"react_max_iter"` // default: 8
 	} `yaml:"investigation"`
 
 	Output struct {
@@ -80,6 +82,12 @@ func applyDefaults(cfg *Config) {
 	}
 	if cfg.Investigation.AnomalyZScore == 0 {
 		cfg.Investigation.AnomalyZScore = 3.0
+	}
+	if cfg.Investigation.Mode == "" {
+		cfg.Investigation.Mode = "plan"
+	}
+	if cfg.Investigation.ReactMaxIter == 0 {
+		cfg.Investigation.ReactMaxIter = 8
 	}
 	for name, srv := range cfg.MCPServers {
 		if srv.Timeout == 0 {
